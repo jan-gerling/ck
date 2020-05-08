@@ -1,8 +1,10 @@
 package com.github.mauricioaniche.ck.metric;
 
 import com.github.mauricioaniche.ck.CKClassResult;
+import com.github.mauricioaniche.ck.CKMethodResult;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,14 +13,33 @@ Calculates the tight and loose class cohesion for a class.
 For more details see: https://www.aivosto.com/project/help/pm-oo-cohesion.html#TCC_LCC
  */
 public class TightClassCohesion implements CKASTVisitor, ClassLevelMetric {
+    HashMap<String, Set<String>> allAccessedFields = new HashMap<>();
+    HashMap<String, Set<String>> accessedFields = new HashMap<>();
+
     //Two methods are directly connected if:
     //1. both access the same class-level variable
     //2. their call trees access the same class-level variable (only within the class)
     private Set<ImmutablePair> getDirectConnections(CKClassResult result){
-        Set<ImmutablePair> directConnections = new HashSet<>();
-        for ()
+        for (CKMethodResult method : result.getMethods()){
+            accessedFields.put(method.getMethodName(), method.getFieldsAccessed());
+        }
+        for (CKMethodResult method : result.getMethods()){
+            generateAccessTree(method, new HashSet<>());
+        }
 
+
+        Set<ImmutablePair> directConnections = new HashSet<>();
         return directConnections;
+    }
+
+    private void generateAccessTree(CKMethodResult method, Set<String> explored){
+        //we already explored the call tree, thus we can just use the found invocations
+        if(allAccessedFields.containsKey(method.getMethodName())){
+            return;
+        }
+        for (CKMethodResult nextMethod : method.()){
+            accessedFields.put(method.getMethodName(), method.getFieldsAccessed());
+        }
     }
 
     //Two methods are indirectly connected if:
