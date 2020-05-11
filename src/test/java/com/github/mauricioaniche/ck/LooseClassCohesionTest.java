@@ -43,4 +43,11 @@ public class LooseClassCohesionTest extends BaseTest {
         CKClassResult ckClass = report.get("ClassCohesion.Simple2");
         Assert.assertEquals(6f / 10f, ckClass.getLooseClassCohesion());
     }
+
+    @Test
+    public void hugeClassCohesion(){
+        Map<String, CKClassResult> reportHuge = run(fixturesDir() + "/real-world-huge-class");
+        CKClassResult ckClass = reportHuge.get("com.satoshilabs.trezor.lib.protobuf.TrezorMessage");
+        Assert.assertTrue(ckClass.getLooseClassCohesion() < 0.000001f);
+    }
 }

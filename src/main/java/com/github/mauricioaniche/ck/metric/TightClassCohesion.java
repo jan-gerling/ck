@@ -114,13 +114,6 @@ public class TightClassCohesion implements CKASTVisitor, ClassLevelMetric {
     }
 
     public void setResult(CKClassResult result) {
-        //performance HotFix: skip class cohesion calculation for larger complex classes in order to improve the performance
-        //Currently, this algorithm has a worst complexity of N * N
-        if(result.getNumberOfMethods() > 35){
-            result.setTightClassCohesion(-1);
-            result.setLooseClassCohesion(-1);
-        }
-
         MethodInvocationsLocal methodInvocationsLocal = new MethodInvocationsLocal();
         methodInvocationsLocal.extractInvocations(result);
 
