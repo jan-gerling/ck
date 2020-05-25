@@ -4,11 +4,13 @@ import com.google.common.collect.Sets;
 import junit.framework.Assert;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -244,5 +246,31 @@ public class MethodInvocationsTest extends BaseTest {
         HashMap<String, Set<String>> invocations9 = new HashMap<>();
         CKMethodResult m9 = ckClass.getMethod("m9/0").get();
         Assert.assertEquals(invocations9, m9.getMethodInvocationsIndirectLocal());
+    }
+
+    @Test
+    public void realWorldConstructorOnly() {
+        Map<String, CKClassResult> report1 = run(fixturesDir() + "/real-world");
+        CKClassResult a = report1.get("org.apache.storm.planner.TaskBundle");
+        CKMethodResult constructor = a.getMethod("TaskBundle/2[org.apache.storm.planner.IBolt,int]").get();
+        Assert.assertEquals(0, constructor.getMethodInvocations().size());
+        Assert.assertEquals(0, constructor.getMethodInvocationsLocal().size());
+        Assert.assertEquals(0, constructor.getMethodInvocationsIndirectLocal().size());
+        Assert.assertEquals(new HashSet<>(), constructor.getMethodInvocations());
+        Assert.assertEquals(new HashSet<>(), constructor.getMethodInvocationsLocal());
+        Assert.assertEquals(new HashMap<String, Map<String, Set<String>>>(), constructor.getMethodInvocationsIndirectLocal());
+    }
+
+    @Test
+    public void realWorldComplex() {
+        Map<String, CKClassResult> report1 = run(fixturesDir() + "/real-world");
+        CKClassResult a = report1.get("org.apache.storm.scheduler.resource.User");
+        CKMethodResult m1 = a.getMethod("markTopoUnsuccess/3[org.apache.storm.scheduler.resource.TopologyDetails,org.apache.storm.scheduler.resource.Cluster,java.lang.String]").get();
+        Assert.assertEquals(3, m1.getMethodInvocations().size());
+        Assert.assertEquals(0, m1.getMethodInvocationsLocal().size());
+        Assert.assertEquals(0, m1.getMethodInvocationsIndirectLocal().size());
+        Assert.assertEquals(Sets.newHashSet("getId/0", "add/0", "setStatus/0"), m1.getMethodInvocations());
+        Assert.assertEquals(new HashSet<>(), m1.getMethodInvocationsLocal());
+        Assert.assertEquals(new HashMap<String, Map<String, Set<String>>>(), m1.getMethodInvocationsIndirectLocal());
     }
 }

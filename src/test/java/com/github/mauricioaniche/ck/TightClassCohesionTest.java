@@ -1,10 +1,12 @@
 package com.github.mauricioaniche.ck;
 
 import junit.framework.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
+import java.util.HashSet;
 import java.util.Map;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -56,5 +58,30 @@ public class TightClassCohesionTest extends BaseTest {
     public void noVisibleMethods(){
         CKClassResult ckClass = report.get("ClassCohesion.NoVisibleMethods");
         Assert.assertEquals(-1, ckClass.getTightClassCohesion(),0.0000001);
+    }
+
+    @Test
+    public void realWorldConstructorOnly() {
+        Map<String, CKClassResult> report1 = run(fixturesDir() + "/real-world");
+        CKClassResult a = report1.get("org.apache.storm.planner.TaskBundle");
+        Assertions.assertEquals(-1f, a.getTightClassCohesion(), 0.0000000000001f);
+        Assertions.assertEquals(-1f, a.getLooseClassCohesion(), 0.0000000000001f);
+    }
+
+    @Test
+    public void realWorldComplex() {
+        Map<String, CKClassResult> report1 = run(fixturesDir() + "/real-world");
+        CKClassResult a = report1.get("org.apache.storm.pmml.runner.jpmml.JpmmlFactory");
+        Assertions.assertEquals(0.0f, a.getTightClassCohesion(), 0.0000000000001f);
+        Assertions.assertEquals(0.0f, a.getLooseClassCohesion(), 0.0000000000001f);
+    }
+
+    //This test was added in order to verify if the TCC and LCC calculation causes any exceptions.
+    @Test
+    public void realWorldComplex2() {
+        Map<String, CKClassResult> report1 = run(fixturesDir() + "/real-world");
+        CKClassResult a = report1.get("org.apache.storm.scheduler.resource.User");
+        Assertions.assertTrue(0 <= a.getTightClassCohesion() && a.getTightClassCohesion() <= 1);
+        Assertions.assertTrue(0 <= a.getLooseClassCohesion() && a.getLooseClassCohesion() <= 1);
     }
 }

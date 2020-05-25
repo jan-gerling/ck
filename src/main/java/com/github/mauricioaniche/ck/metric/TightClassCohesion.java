@@ -113,7 +113,7 @@ public class TightClassCohesion implements CKASTVisitor, ClassLevelMetric {
 
     public void setResult(CKClassResult result) {
         //in case the class does not contain any visible methods, TCC and LCC have no reasonable value, thus set it to -1
-        if(result.getVisibleMethods().size() < 1){
+        if(result.getVisibleMethods().size() < 2){
             result.setTightClassCohesion(-1);
             result.setLooseClassCohesion(-1);
         } else {

@@ -1,6 +1,7 @@
 package com.github.mauricioaniche.ck;
 
 import com.google.common.collect.Sets;
+import junit.framework.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -80,5 +81,14 @@ public class LocalFieldsAccessedTest extends BaseTest {
         CKClassResult a = report.get("fieldusage.FieldUsage");
         CKMethodResult m10 = a.getMethod("m10/0").get();
         Assertions.assertEquals(Sets.newHashSet("a"), m10.getFieldsAccessed());
+    }
+
+    @Test
+    public void realWorldConstructorOnly() {
+        Map<String, CKClassResult> report1 = run(fixturesDir() + "/real-world");
+        CKClassResult a = report1.get("org.apache.storm.planner.TaskBundle");
+        CKMethodResult constructor = a.getMethod("TaskBundle/2[org.apache.storm.planner.IBolt,int]").get();
+        Assert.assertEquals(2, constructor.getFieldsAccessed().size());
+        Assert.assertEquals(Sets.newHashSet("task", "componentId"), constructor.getFieldsAccessed());
     }
 }
